@@ -20,6 +20,7 @@ class ScheduledEventPublisher {
             .uuid(UUID.randomUUID())
             .userId("scheduler")
             .productId(String.valueOf((int) (Math.random() * 1000)))
+            .comment("Generated from scheduled event publisher")
             .build());
     }
 
