@@ -4,7 +4,7 @@
 # kafka-broker:   https://hub.docker.com/r/confluentinc/cp-kafka
 #                 https://docs.confluent.io/platform/current/installation/docker/config-reference.html#confluent-ak-configuration
 
-version: '3.1'
+version: '3.8'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.3
