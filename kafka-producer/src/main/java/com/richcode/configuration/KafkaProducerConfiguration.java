@@ -21,7 +21,7 @@ class KafkaProducerConfiguration {
     private final KafkaProperties kafkaProperties;
 
     @Bean
-    @ConditionalOnProperty(name = "kafka.producer.strategy", havingValue = "at-most-once")
+    @ConditionalOnProperty(name = "kafka.producer.strategy", havingValue = "at-most-once", matchIfMissing = true)
     public ProducerFactory<String, PurchaseEvent> atMostOnceProducerFactory() {
         return new DefaultKafkaProducerFactory<>(atMostOnceProducerStrategy());
     }
