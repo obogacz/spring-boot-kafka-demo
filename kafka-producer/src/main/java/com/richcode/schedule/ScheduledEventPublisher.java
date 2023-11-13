@@ -12,11 +12,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 class ScheduledEventPublisher {
 
-    private final EventPublisher asyncEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Scheduled(fixedDelay = 2000)
     public void sendEvent() {
-        asyncEventPublisher.send(PurchaseEvent.builder()
+        eventPublisher.send(PurchaseEvent.builder()
             .uuid(UUID.randomUUID())
             .userId("scheduler")
             .productId(String.valueOf((int) (Math.random() * 1000)))
