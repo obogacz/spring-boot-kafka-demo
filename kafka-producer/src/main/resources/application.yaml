@@ -1,2 +1,13 @@
 server:
   port: 8081
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+
+kafka:
+  topics:
+    purchases:
+      name: richdemo.customer.purchases.0
+      partitions: 3
+      replicas: 2
