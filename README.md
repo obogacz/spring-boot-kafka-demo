@@ -8,7 +8,6 @@ Demo of Kafka producer and consumer with SpringBoot
 - Kafka Producer
   - Dockerfile
   - Add container of producer to docker-compose.yml
-  - Configure by application.yaml which config params are used to create the kafka producer
   - Event Serializer (from spring.kafka.support or custom)
 - Kafka Consumer
   - Add basic kafka consumer

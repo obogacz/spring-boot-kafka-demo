@@ -10,17 +10,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-class KafkaConfiguration {
+class KafkaTopicConfiguration {
 
     @Bean
-    public KafkaAdmin kafkaAdmin(KafkaProperties kafkaProperties) {
+    public KafkaAdmin kafkaAdmin(final KafkaProperties kafkaProperties) {
         final Map<String, Object> config = new HashMap<>();
         config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapAddress());
         return new KafkaAdmin(config);
     }
 
     @Bean
-    public NewTopic topicPurchases(KafkaProperties kafkaProperties) {
+    public NewTopic topicPurchases(final KafkaProperties kafkaProperties) {
         return new NewTopic(
             kafkaProperties.getTopicPurchasesName(),
             kafkaProperties.getTopicPurchasesPartitions(),
