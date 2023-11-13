@@ -1,0 +1,64 @@
+# Used images references:
+# zookeeper:      https://hub.docker.com/r/confluentinc/cp-zookeeper
+#                 https://docs.confluent.io/platform/current/installation/docker/config-reference.html#zk-configuration
+# kafka-broker:   https://hub.docker.com/r/confluentinc/cp-kafka
+#                 https://docs.confluent.io/platform/current/installation/docker/config-reference.html#confluent-ak-configuration
+
+version: '3.8'
+name: single-zookeeper-single-broker
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:7.4.3
+    hostname: zookeeper-1
+    container_name: zookeeper-1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
+    restart: unless-stopped
+
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:7.4.3
+    hostname: zookeeper-2
+    container_name: zookeeper-2
+    ports:
+      - "2182:2182"
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
+    restart: unless-stopped
+
+  zookeeper-3:
+    image: confluentinc/cp-zookeeper:7.4.3
+    hostname: zookeeper-3
+    container_name: zookeeper-3
+    ports:
+      - "2183:2183"
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 2183
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
+    restart: unless-stopped
+
+  kafka-broker-1:
+    image: confluentinc/cp-kafka:7.4.3
+    hostname: kafka-broker-1
+    container_name: kafka-broker-1
+    ports:
+      - "9091:9091"
+      - "29091:29091"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-broker-1:19091,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9091,DOCKER://host.docker.internal:29091
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183"
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+    restart: unless-stopped
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
