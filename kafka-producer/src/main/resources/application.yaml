@@ -1,11 +1,8 @@
 server:
   port: 8081
 
-spring:
-  kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
-
 kafka:
+  bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
   producer:
     strategy: at-most-once
     publishing: async

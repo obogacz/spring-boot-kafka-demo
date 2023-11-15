@@ -23,7 +23,7 @@ public class SyncEventPublisher implements EventPublisher {
             final var sendResult = kafkaTemplate.send(producerRecord(event));
             kafkaTemplate.flush();
             sendResult.get();
-            log.info("Purchase event was sent: {}", event);
+            log.info("[SENT EVENT] event: {}", event);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Sending of event was interrupted");

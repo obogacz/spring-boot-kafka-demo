@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaProperties {
 
-    @Value(value = "${spring.kafka.bootstrap-servers}")
+    @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     @Value(value = "${kafka.producer.strategy:at-most-once}")

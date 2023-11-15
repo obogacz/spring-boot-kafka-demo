@@ -1,0 +1,11 @@
+server:
+  port: 8091
+
+kafka:
+  bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+  consumer:
+    client-id: kafka-demo-consumer
+    group-id: kafka-demo-consumer-group-id-1
+  topics:
+    purchases:
+      name: richdemo.customer.purchases.0
