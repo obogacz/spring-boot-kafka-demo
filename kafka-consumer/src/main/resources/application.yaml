@@ -1,6 +1,13 @@
 server:
   port: 8091
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dbcache
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+
 kafka:
   bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
   consumer:

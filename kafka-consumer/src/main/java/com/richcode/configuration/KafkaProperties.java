@@ -12,7 +12,7 @@ public class KafkaProperties {
     public static final String KAFKA_TOPIC_PURCHASE_PLACEHOLDER = "${kafka.topics.purchases.name}";
     public static final String KAFKA_PURCHASE_LISTENER_CONTAINER_FACTORY_BEAN = "kafkaPurchaseListenerContainerFactory";
 
-    @Value(value = "${kafka.consumer.bootstrap-servers}")
+    @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     @Value(value = KAFKA_CONSUMER_GROUP_ID_PLACEHOLDER)
