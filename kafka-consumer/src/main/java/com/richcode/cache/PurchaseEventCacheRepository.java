@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-@Repository
 @RequiredArgsConstructor
 public class PurchaseEventCacheRepository {
 
