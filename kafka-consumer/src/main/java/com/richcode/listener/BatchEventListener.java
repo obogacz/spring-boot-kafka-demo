@@ -25,6 +25,8 @@ public class BatchEventListener {
         groupId = KafkaProperties.KAFKA_CONSUMER_GROUP_ID_PLACEHOLDER,
         containerFactory = KafkaProperties.KAFKA_PURCHASE_BATCH_EVENT_LISTENER_CONTAINER_FACTORY_BEAN)
     public void handle(final ConsumerRecords<String, PurchaseEvent> events, final Acknowledgment ack) {
+        log.info("[RECEIVED EVENTS] count: {}, topic-partition: {}", events.count(), events.partitions());
+
         final AtomicInteger counter = new AtomicInteger(0);
         events.forEach(event -> handle(event, ack, counter));
         commitOffset(ack);
@@ -34,7 +36,7 @@ public class BatchEventListener {
                         final Acknowledgment ack,
                         final AtomicInteger counter) {
 
-        log.info("[RECEIVED EVENT] topic: {}, partition: {}, offset: {}, event: {}",
+        log.info("[PROCESSING EVENT] topic: {}, partition: {}, offset: {}, event: {}",
             event.topic(), event.partition(), event.offset(), event.value());
 
         consumer.consume(event);
@@ -50,5 +52,6 @@ public class BatchEventListener {
 
     private void commitOffset(final Acknowledgment ack) {
         ack.acknowledge();
+        log.info("[OFFSET ACK] Acknowledged offset");
     }
 }

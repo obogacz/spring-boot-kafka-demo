@@ -1,6 +1,5 @@
 package com.richcode.configuration;
 
-import com.richcode.cache.OffsetCacheRepository;
 import com.richcode.domain.PurchaseEvent;
 import org.infinispan.Cache;
 import org.infinispan.commons.marshall.JavaSerializationMarshaller;
@@ -10,15 +9,17 @@ import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.richcode.cache.OffsetCacheRepository.*;
+import static com.richcode.cache.OffsetCacheRepository.Offset;
 
 @Configuration
+@ConditionalOnProperty(name = "kafka.consumer.idempotent", havingValue = "true")
 class CacheConfig {
 
     private static final String PURCHASE_EVENT_CACHE = "purchaseEventCache";

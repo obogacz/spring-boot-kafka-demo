@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PurchaseEventIdempotentConsumer implements EventConsumer {
+public class IdempotentEventConsumer implements EventConsumer {
 
     private final OffsetCacheRepository offsetCacheRepository;
     private final PurchaseEventCacheRepository eventCacheRepository;
@@ -27,6 +27,9 @@ public class PurchaseEventIdempotentConsumer implements EventConsumer {
 
         eventCacheRepository.save(event.value());
         offsetCacheRepository.save(event.topic(), event.partition(), event.offset());
+
+        log.info("[CONSUMED EVENT] topic: {}, partition: {}, offset: {}, event: {}",
+            event.topic(), event.partition(), event.offset(), event.value());
     }
 
     private boolean isAlreadyProcessed(final PurchaseEvent event) {

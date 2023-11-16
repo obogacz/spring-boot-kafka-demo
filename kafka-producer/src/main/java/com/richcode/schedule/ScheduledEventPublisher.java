@@ -14,7 +14,7 @@ class ScheduledEventPublisher {
 
     private final EventPublisher eventPublisher;
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 200)
     public void sendEvent() {
         eventPublisher.send(PurchaseEvent.builder()
             .uuid(UUID.randomUUID())
