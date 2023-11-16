@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
-class KafkaPublisherConfiguration {
+class EventPublisherConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "kafka.producer.publishing", havingValue = "async", matchIfMissing = true)

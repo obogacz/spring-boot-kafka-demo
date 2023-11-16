@@ -1,7 +1,7 @@
 package com.richcode.listener;
 
 import com.richcode.configuration.KafkaProperties;
-import com.richcode.consumer.PurchaseEventConsumer;
+import com.richcode.consumer.EventConsumer;
 import com.richcode.domain.PurchaseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,14 +9,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
-class EventListener {
+public class SingleEventListener {
 
-    private final PurchaseEventConsumer consumer;
+    private final EventConsumer consumer;
 
     @KafkaListener(
         topics = KafkaProperties.KAFKA_TOPIC_PURCHASE_PLACEHOLDER,

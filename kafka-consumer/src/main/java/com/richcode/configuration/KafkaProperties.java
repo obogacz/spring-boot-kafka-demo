@@ -18,6 +18,12 @@ public class KafkaProperties {
     @Value(value = KAFKA_CONSUMER_GROUP_ID_PLACEHOLDER)
     private String consumerGroupId;
 
+    @Value(value = "${kafka.consumer.processing-type:single}")
+    private String consumerProcessingType;
+
+    @Value(value = "${kafka.consumer.idempotent:false}")
+    private boolean consumerIdempotent;
+
     @Value(value = KAFKA_TOPIC_PURCHASE_PLACEHOLDER)
     private String topicPurchasesName;
 
