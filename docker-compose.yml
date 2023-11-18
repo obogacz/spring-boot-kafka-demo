@@ -7,20 +7,10 @@
 version: '3.8'
 services:
 
-  db:
-    image: postgres:16.1-alpine
-    container_name: database
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: dbcache
-    restart: always
+  ### Apache Kafka Cluster ###
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.3
-    hostname: zookeeper
     container_name: zookeeper
     ports:
       - "2181:2181"
@@ -32,7 +22,6 @@ services:
 
   kafka-broker-1:
     image: confluentinc/cp-kafka:7.4.3
-    hostname: kafka-broker-1
     container_name: kafka-broker-1
     ports:
       - "9091:9091"
@@ -50,7 +39,6 @@ services:
 
   kafka-broker-2:
     image: confluentinc/cp-kafka:7.4.3
-    hostname: kafka-broker-2
     container_name: kafka-broker-2
     ports:
       - "9092:9092"
@@ -68,7 +56,6 @@ services:
 
   kafka-broker-3:
     image: confluentinc/cp-kafka:7.4.3
-    hostname: kafka-broker-3
     container_name: kafka-broker-3
     ports:
       - "9093:9093"
@@ -83,3 +70,131 @@ services:
     restart: unless-stopped
     depends_on:
       - zookeeper
+
+  ### Demo Producer & Consumer ###
+
+  producer-1:
+    build:
+      context: kafka-producer
+      dockerfile: Dockerfile
+    container_name: producer-1
+    image: kafka-producer:latest
+    profiles:
+      - demo
+    ports:
+      - "8081:8081"
+    environment:
+      # SpringBoot
+      SPRING_PORT: 8081
+      SCHEDULED_SEND_EVENT_FIX_DELAY: 200
+      # Apache Kafka Producer
+      KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:19091,kafka-broker-2:19092,kafka-broker-3:19093
+      KAFKA_PRODUCER_STRATEGY: at-most-once
+      KAFKA_PRODUCER_PUBLISHING: async
+      KAFKA_TOPICS_PURCHASES_NAME: richdemo.customer.purchases.0
+      KAFKA_TOPICS_PURCHASES_PARTITIONS: 3
+      KAFKA_TOPICS_PURCHASES_REPLICAS: 2
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+
+  consumer-1:
+    build:
+      context: kafka-consumer
+      dockerfile: Dockerfile
+    image: kafka-consumer:latest
+    container_name: consumer-1
+    profiles:
+      - demo
+    ports:
+      - "8091:8091"
+    environment:
+      # SpringBoot
+      SPRING_PORT: 8091
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consumer-database-cache:5432/dbcache
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # Apache Kafka Consumer
+      KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:19091,kafka-broker-2:19092,kafka-broker-3:19093
+      KAFKA_CONSUMER_CLIENT_ID: kafka-demo-consumer
+      KAFKA_CONSUMER_GROUP_ID: kafka-demo-consumer-group-id-1
+      KAFKA_CONSUMER_TYPE: single
+      KAFKA_CONSUMER_STRATEGY: at-most-once
+      KAFKA_TOPICS_PURCHASES: richdemo.customer.purchases.0
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+      - consumer-database-cache
+
+  consumer-2:
+    build:
+      context: kafka-consumer
+      dockerfile: Dockerfile
+    image: kafka-consumer:latest
+    container_name: consumer-2
+    profiles:
+      - demo
+    ports:
+      - "8092:8092"
+    environment:
+      # SpringBoot
+      SPRING_PORT: 8092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consumer-database-cache:5432/dbcache
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # Apache Kafka Consumer
+      KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:19091,kafka-broker-2:19092,kafka-broker-3:19093
+      KAFKA_CONSUMER_CLIENT_ID: kafka-demo-consumer
+      KAFKA_CONSUMER_GROUP_ID: kafka-demo-consumer-group-id-1
+      KAFKA_CONSUMER_TYPE: single
+      KAFKA_CONSUMER_STRATEGY: at-most-once
+      KAFKA_TOPICS_PURCHASES: richdemo.customer.purchases.0
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+      - consumer-database-cache
+
+  consumer-3:
+    build:
+      context: kafka-consumer
+      dockerfile: Dockerfile
+    image: kafka-consumer:latest
+    container_name: consumer-3
+    profiles:
+      - demo
+    ports:
+      - "8093:8093"
+    environment:
+      # SpringBoot
+      SPRING_PORT: 8093
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consumer-database-cache:5432/dbcache
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # Apache Kafka Consumer
+      KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:19091,kafka-broker-2:19092,kafka-broker-3:19093
+      KAFKA_CONSUMER_CLIENT_ID: kafka-demo-consumer
+      KAFKA_CONSUMER_GROUP_ID: kafka-demo-consumer-group-id-1
+      KAFKA_CONSUMER_TYPE: single
+      KAFKA_CONSUMER_STRATEGY: at-most-once
+      KAFKA_TOPICS_PURCHASES: richdemo.customer.purchases.0
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+      - consumer-database-cache
+
+  consumer-database-cache:
+    image: postgres:16.1-alpine
+    container_name: consumer-database-cache
+    profiles:
+      - demo
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: dbcache
+    restart: always

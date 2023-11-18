@@ -43,9 +43,11 @@ public class RebalanceListener implements ConsumerAwareRebalanceListener {
     private void onSinglePartitionsAssigned(Consumer<?, ?> consumer, TopicPartition partition) {
         processedOffsetCacheRepository
             .find(partition)
-            .ifPresent(offset -> consumer.seek(partition, (offset.offset() + 1)));
-
-        log.info("[REBALANCING] Seek to partition: {}", partition);
+            .ifPresent(offset -> {
+                consumer.seek(partition, (offset.offset() + 1));
+                log.info("[REBALANCING] Seek to topic: {}, partition: {}, offset: {}",
+                    partition.topic(), partition.partition(), offset.offset() + 1);
+            });
     }
 
 }

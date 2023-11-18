@@ -1,13 +1,6 @@
 server:
   port: 8081
 
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/dbcache
-    username: postgres
-    password: postgres
-
 kafka:
   bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
   producer:

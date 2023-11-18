@@ -2,6 +2,7 @@ package com.richcode.configuration;
 
 import com.richcode.domain.PurchaseEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import static com.richcode.StrategyConfiguration.*;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 class KafkaProducerConfiguration {
@@ -33,6 +35,7 @@ class KafkaProducerConfiguration {
             ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4",
             ProducerConfig.BUFFER_MEMORY_CONFIG, 33_554_432
         );
+        log.error(kafkaProperties.getBootstrapAddress());
         return new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new JsonSerializer<>());
     }
 
