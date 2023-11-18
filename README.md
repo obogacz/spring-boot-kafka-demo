@@ -9,6 +9,5 @@ Demo of Kafka producer and consumer with SpringBoot
   - Dockerfile
   - Add container of producer to docker-compose.yml
 - Kafka Consumer
-  - Add batch kafka consumer
   - Docker file
   - Add container of consumers to docker-compose.yml

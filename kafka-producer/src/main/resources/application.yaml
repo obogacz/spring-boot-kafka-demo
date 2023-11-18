@@ -18,3 +18,6 @@ kafka:
       name: richdemo.customer.purchases.0
       partitions: 3
       replicas: 2
+
+scheduled:
+  send-event-fix-delay: 200
