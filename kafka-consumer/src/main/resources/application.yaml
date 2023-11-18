@@ -13,8 +13,8 @@ kafka:
   consumer:
     client-id: kafka-demo-consumer
     group-id: kafka-demo-consumer-group-id-1
-    processing-type: batch
-    idempotent: true
+    type: batch
+    strategy: at-least-once
   topics:
     purchases:
       name: richdemo.customer.purchases.0

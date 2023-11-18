@@ -1,11 +1,13 @@
 package com.richcode.configuration;
 
+import com.richcode.cache.ProcessedOffsetCacheRepository;
 import com.richcode.domain.PurchaseEvent;
+import com.richcode.listener.RebalanceListener;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -18,15 +20,22 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.Map;
 
+import static com.richcode.StrategyConfiguration.*;
+import static org.springframework.kafka.listener.ContainerProperties.*;
+
 @EnableKafka
 @Configuration
 @RequiredArgsConstructor
-class KafkaConsumerConfiguration {
+@ConditionalOnBean(ExactlyOnceConsumerStrategy.class)
+public class KafkaExactlyOnceConsumerConfiguration {
+
+    public static final String SINGLE_EVENT_LISTENER_CONTAINER_FACTORY_BEAN_NAME = "kafkaPurchaseExactlyOnceSingleEventListenerContainerFactory";
+    public static final String BATCH_EVENT_LISTENER_CONTAINER_FACTORY_BEAN_NAME = "kafkaPurchaseExactlyOnceBatchEventListenerContainerFactory";
 
     private final KafkaProperties kafkaProperties;
 
     @Bean
-    public ConsumerFactory<String, PurchaseEvent> consumerFactory() {
+    ConsumerFactory<String, PurchaseEvent> consumerFactory() {
         final Deserializer<String> keyDeserializer = new StringDeserializer();
         final Deserializer<PurchaseEvent> valueDeserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(PurchaseEvent.class));
         final Map<String, Object> config = Map.of(
@@ -38,28 +47,25 @@ class KafkaConsumerConfiguration {
         return new DefaultKafkaConsumerFactory<>(config, keyDeserializer, valueDeserializer);
     }
 
-    @Bean(KafkaProperties.KAFKA_PURCHASE_SINGLE_EVENT_LISTENER_CONTAINER_FACTORY_BEAN)
-    @ConditionalOnProperty(name = "kafka.consumer.processing-type", havingValue = "single", matchIfMissing = true)
-    public ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> kafkaSingleEventListenerContainerFactory() {
+    @Bean(SINGLE_EVENT_LISTENER_CONTAINER_FACTORY_BEAN_NAME)
+    @ConditionalOnBean(SingleEventListenerStrategy.class)
+    ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> singleEventListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
         containerFactory.setConsumerFactory(consumerFactory());
         containerFactory.getContainerProperties().setSyncCommits(true);
-        containerFactory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        containerFactory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
         return containerFactory;
     }
 
-    @Bean(KafkaProperties.KAFKA_PURCHASE_BATCH_EVENT_LISTENER_CONTAINER_FACTORY_BEAN)
-    @ConditionalOnProperty(name = "kafka.consumer.processing-type", havingValue = "batch")
-    public ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> kafkaBatchEventListenerContainerFactory() {
+    @Bean(BATCH_EVENT_LISTENER_CONTAINER_FACTORY_BEAN_NAME)
+    @ConditionalOnBean(BatchEventListenerStrategy.class)
+    ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> batchEventListenerContainerFactory(final ProcessedOffsetCacheRepository processedOffsetCacheRepository) {
         ConcurrentKafkaListenerContainerFactory<String, PurchaseEvent> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
         containerFactory.setConsumerFactory(consumerFactory());
         containerFactory.setBatchListener(true);
         containerFactory.getContainerProperties().setSyncCommits(true);
-        containerFactory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-
-        // todo
-//        containerFactory.getContainerProperties().setConsumerRebalanceListener();
-
+        containerFactory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
+        containerFactory.getContainerProperties().setConsumerRebalanceListener(new RebalanceListener(processedOffsetCacheRepository));
         return containerFactory;
     }
 

@@ -11,10 +11,16 @@ public class BasicEventConsumer implements EventConsumer {
     @Override
     public void consume(final ConsumerRecord<String, PurchaseEvent> event) {
 
-        // processing logic
+        process(event.value());
 
         log.info("[CONSUMED EVENT] topic: {}, partition: {}, offset: {}, event: {}",
             event.topic(), event.partition(), event.offset(), event.value());
+    }
+
+    private void process(final PurchaseEvent event) {
+
+        // processing logic
+
     }
 
 }

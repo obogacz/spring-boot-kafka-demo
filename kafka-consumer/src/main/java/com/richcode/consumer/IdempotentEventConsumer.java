@@ -1,6 +1,6 @@
 package com.richcode.consumer;
 
-import com.richcode.cache.OffsetCacheRepository;
+import com.richcode.cache.ProcessedOffsetCacheRepository;
 import com.richcode.cache.PurchaseEventCacheRepository;
 import com.richcode.domain.PurchaseEvent;
 import lombok.RequiredArgsConstructor;
@@ -12,28 +12,34 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class IdempotentEventConsumer implements EventConsumer {
 
-    private final OffsetCacheRepository offsetCacheRepository;
-    private final PurchaseEventCacheRepository eventCacheRepository;
+    private final PurchaseEventCacheRepository purchaseEventCacheRepository;
+    private final ProcessedOffsetCacheRepository processedOffsetCacheRepository;
 
     @Override
     @Transactional
     public void consume(final ConsumerRecord<String, PurchaseEvent> event) {
-        if (isAlreadyProcessed(event.value())) {
+        if (isAlreadyProcessed(event)) {
             log.info("Event has been already processed: {}", event);
             return;
         }
 
-        // processing logic
+        process(event.value());
 
-        eventCacheRepository.save(event.value());
-        offsetCacheRepository.save(event.topic(), event.partition(), event.offset());
+        purchaseEventCacheRepository.save(event);
+        processedOffsetCacheRepository.save(event);
 
         log.info("[CONSUMED EVENT] topic: {}, partition: {}, offset: {}, event: {}",
             event.topic(), event.partition(), event.offset(), event.value());
     }
 
-    private boolean isAlreadyProcessed(final PurchaseEvent event) {
-        return eventCacheRepository.exists(event.uuid());
+    private boolean isAlreadyProcessed(final ConsumerRecord<String, PurchaseEvent> event) {
+        return purchaseEventCacheRepository.exists(event);
+    }
+
+    private void process(final PurchaseEvent event) {
+
+        // processing logic
+
     }
 
 }

@@ -7,7 +7,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableTransactionManagement
 public class ConsumerApp {
+
+    private static final Class[] PRIMARY_CONFIG_SOURCES = { StrategyConfiguration.class, ConsumerApp.class };
+
     public static void main( String[] args ) {
-        SpringApplication.run(ConsumerApp.class, args);
+        SpringApplication.run(PRIMARY_CONFIG_SOURCES, args);
     }
 }
