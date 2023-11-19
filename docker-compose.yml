@@ -79,8 +79,6 @@ services:
       dockerfile: Dockerfile
     container_name: producer-1
     image: kafka-producer:latest
-    profiles:
-      - demo
     ports:
       - "8081:8081"
     environment:
