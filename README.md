@@ -33,6 +33,9 @@ To simplify setup, all container definitions are provided in the `docker-compose
 - Event Consumer x3
 - PostgreSQL Database
 
+> [!NOTE]  
+> Other examples of the Apache Kafka environment setup are in the `/kafka-configs` directory.
+
 ### Running Kafka with Docker
 To run only Apache Kafka containers navigate to the project root and run the following command:
 ```shell
@@ -64,8 +67,8 @@ The Event Producer in this project can publish events according to three availab
 
 ### Producer Publishing Modes
 The Event Producer allows events to be published in two modes:
-- Synchronous Publishing: Waits for acknowledgment from the Kafka broker before moving on to the next event.
-- Asynchronous Publishing: Continues to publish events without waiting for acknowledgment, enhancing throughput at the cost of potential delivery confirmation.
+- **Synchronous Publishing** - Waits for acknowledgment from the Kafka broker before moving on to the next event.
+- **Asynchronous Publishing** - Continues to publish events without waiting for acknowledgment, enhancing throughput at the cost of potential delivery confirmation.
 
 ### Configuration via application.yml
 All of these publishing properties can be configured in the `application.yml` file of the **kafka-producer** module. Customize the configurations based on your specific requirements, taking advantage of the flexibility offered by the YAML format for clear and concise adjustments. Refer to the provided sample configurations for guidance.
