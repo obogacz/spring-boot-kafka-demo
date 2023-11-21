@@ -53,19 +53,20 @@ public class StrategyConfiguration {
     @Bean
     @ConditionalOnProperty(
         name = KAFKA_PRODUCER_PUBLISHING_PROPERTY,
-        havingValue = KAFKA_PRODUCER_PUBLISHING_SYNC_VALUE)
-    public SyncPublishingStrategy syncPublishingStrategy() {
-        log.info("Configured synchronous publishing strategy");
-        return new SyncPublishingStrategy();
+        havingValue = KAFKA_PRODUCER_PUBLISHING_ASYNC_VALUE,
+        matchIfMissing = true)
+    public AsyncPublishingStrategy asyncPublishingStrategy() {
+        log.info("Configured asynchronous publishing strategy");
+        return new AsyncPublishingStrategy();
     }
 
     @Bean
     @ConditionalOnProperty(
         name = KAFKA_PRODUCER_PUBLISHING_PROPERTY,
-        havingValue = KAFKA_PRODUCER_PUBLISHING_ASYNC_VALUE)
-    public AsyncPublishingStrategy asyncPublishingStrategy() {
-        log.info("Configured asynchronous publishing strategy");
-        return new AsyncPublishingStrategy();
+        havingValue = KAFKA_PRODUCER_PUBLISHING_SYNC_VALUE)
+    public SyncPublishingStrategy syncPublishingStrategy() {
+        log.info("Configured synchronous publishing strategy");
+        return new SyncPublishingStrategy();
     }
 
 }

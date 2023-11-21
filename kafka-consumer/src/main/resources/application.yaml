@@ -13,8 +13,8 @@ kafka:
   consumer:
     client-id: kafka-demo-consumer
     group-id: kafka-demo-consumer-group-id-1
-    type: batch
     strategy: at-least-once
+    type: batch
   topics:
     purchases:
       name: richdemo.customer.purchases.0
